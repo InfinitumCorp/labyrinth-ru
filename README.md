@@ -27,6 +27,10 @@ Every org's data is one AES-256-GCM envelope under a per-org key derived from th
 # once: the CID directory key, piped from Secret Manager, never printed
 gcloud secrets versions access latest --secret lbrnth-cid-directory-key --project infinitum-identity \
   | ssh labyrinth-russia 'sudo install -D -m 0600 /dev/stdin /etc/lbrnth/cid-directory-key'
+# GitHub is often unreachable from the server: upload the pinned code from your PC
+SHA=$(sed -n 's/^SHA=\${NEXUS_SHA:-\(.*\)}$/\1/p' scripts/setup.sh)
+curl -fsSL "https://codeload.github.com/InfinitumCorp/infinitum-nexus/tar.gz/$SHA" \
+  | ssh labyrinth-russia "cat > /tmp/infinitum-nexus-$SHA.tar.gz"
 # then (again to upgrade after bumping SHA)
 ssh labyrinth-russia 'bash -s' < scripts/setup.sh
 bash scripts/check.sh

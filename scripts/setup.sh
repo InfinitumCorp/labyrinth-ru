@@ -94,7 +94,7 @@ fi
   echo "LBRNTH_MASTER_KEY=$(sudo cat /etc/lbrnth/master-key)"
   echo "DATABASE_URL=postgresql://lbrnth_host:$DBPW@127.0.0.1:5432/lbrnth"
   echo "CID_DIRECTORY_KEY=$(sudo cat /etc/lbrnth/cid-directory-key)"
-  sudo test -f /etc/lbrnth/entitled-orgs && echo "LBRNTH_ENTITLED_ORGS=$(sudo cat /etc/lbrnth/entitled-orgs)"
+  if sudo test -f /etc/lbrnth/entitled-orgs; then echo "LBRNTH_ENTITLED_ORGS=$(sudo cat /etc/lbrnth/entitled-orgs)"; fi
 } | sudo install -m 0600 /dev/stdin /etc/lbrnth/env
 unset DBPW
 
