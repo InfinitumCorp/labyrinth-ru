@@ -39,7 +39,10 @@ sudo install -d -m 0700 /etc/lbrnth
 REL=/opt/lbrnth/releases/$SHA
 if ! sudo test -f "$REL/apps/lbrnth-host/src/main.ts"; then
   sudo rm -rf "$REL.tmp" && sudo mkdir -p "$REL.tmp"
-  curl -fsSL "https://codeload.github.com/InfinitumCorp/infinitum-nexus/tar.gz/$SHA" \
+  # GitHub is often unreachable from Russia: use a tarball uploaded to /tmp when present
+  # (see README), else download it.
+  TARBALL=/tmp/infinitum-nexus-$SHA.tar.gz
+  { if [ -s "$TARBALL" ]; then cat "$TARBALL"; else curl -fsSL -m 120 "https://codeload.github.com/InfinitumCorp/infinitum-nexus/tar.gz/$SHA"; fi; } \
     | sudo tar -xz --strip-components=1 -C "$REL.tmp" --no-same-owner \
         --wildcards '*/package.json' '*/pnpm-lock.yaml' '*/pnpm-workspace.yaml' '*/packages/*' '*/apps/lbrnth-host/*' '*/supabase/migrations/*lbrnth*'
   (cd "$REL.tmp" && sudo env PATH=/usr/local/bin:$PATH COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
